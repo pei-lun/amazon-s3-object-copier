@@ -1,6 +1,7 @@
+import ast
 from os import environ
 from urllib.parse import unquote_plus
-import ast
+
 import boto3
 
 
