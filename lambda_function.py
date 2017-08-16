@@ -15,13 +15,13 @@ def lambda_handler(event, context):
     new_bucket = environ['BUCKET']
     new_prefix = environ.get('PREFIX', '')
     recursive = environ.get('RECURSIVE', '0')
-    trimmed = environ.get('TRIMMED', '')
+    skip = environ.get('SKIP', '')
     if not source_key.endswith('/'):
         new_key = generate_new_key(
             source_key,
             new_prefix=new_prefix,
             recursive=bool(int(recursive)),
-            old_prefix=trimmed
+            skip=skip
         )
         print(
             f'Copying object from s3://{source_bucket}/{source_key}'
@@ -37,13 +37,13 @@ def lambda_handler(event, context):
         )
 
 
-def generate_new_key(key, new_prefix='', old_prefix='', recursive=False):
+def generate_new_key(key, new_prefix='', recursive=False, skip=''):
     if new_prefix != '' and not new_prefix.endswith('/'):
         raise InvalidPrefix()
-    if old_prefix != '' and not old_prefix.endswith('/') and recursive:
+    if skip != '' and not skip.endswith('/') and recursive:
         raise InvalidPrefix()
-    trimmed_key = key[len(old_prefix):]
-    base_key = trimmed_key if recursive else trimmed_key.split('/')[-1]
+    stripped_key = key[len(skip):]
+    base_key = stripped_key if recursive else stripped_key.split('/')[-1]
     return f'{new_prefix}{base_key}'
 
 
