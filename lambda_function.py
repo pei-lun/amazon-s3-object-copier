@@ -14,15 +14,22 @@ def lambda_handler(event, context):
     source_key = str(unquote_plus(record['s3']['object']['key']))
     new_bucket = environ['BUCKET']
     new_prefix = environ.get('PREFIX', '')
+    recursive = environ.get('RECURSIVE', '0')
+    trimmed = environ.get('TRIMMED', '')
     if not source_key.endswith('/'):
-        key = source_key.split('/')[-1]
+        new_key = generate_new_key(
+            source_key,
+            new_prefix=new_prefix,
+            recursive=bool(int(recursive)),
+            old_prefix=trimmed
+        )
         print(
-            f'Copying s3://{source_bucket}/{source_key}'
-            f' to s3://{new_bucket}/{new_prefix}{key}.'
+            f'Copying object from s3://{source_bucket}/{source_key}'
+            f' to s3://{new_bucket}/{new_key}.'
         )
         s3.copy_object(
             Bucket=new_bucket,
-            Key=f'{new_prefix}{key}',
+            Key=new_key,
             CopySource={
                 'Bucket': source_bucket,
                 'Key': source_key
