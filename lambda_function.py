@@ -5,8 +5,7 @@ from urllib.parse import unquote_plus
 import boto3
 
 
-def lambda_handler(event, context):
-    _ = context
+def lambda_handler(event, *_):
     s3 = boto3.client('s3')
     sns_msg = ast.literal_eval(event['Records'][0]['Sns']['Message'])
     record = sns_msg['Records'][0]
