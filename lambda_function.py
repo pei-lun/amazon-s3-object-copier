@@ -19,7 +19,7 @@ def lambda_handler(event, context):
     if not source_key.endswith('/'):
         new_key = generate_new_key(
             source_key,
-            new_prefix=new_prefix,
+            prefix=new_prefix,
             recursive=bool(int(recursive)),
             skip=skip
         )
@@ -37,14 +37,14 @@ def lambda_handler(event, context):
         )
 
 
-def generate_new_key(key, new_prefix='', recursive=False, skip=''):
-    if new_prefix != '' and not new_prefix.endswith('/'):
-        raise InvalidPrefix()
+def generate_new_key(key, prefix='', recursive=False, skip=''):
+    if prefix != '' and not prefix.endswith('/'):
+        raise InvalidPrefix
     if skip != '' and not skip.endswith('/') and recursive:
-        raise InvalidPrefix()
+        raise InvalidPrefix
     stripped_key = key[len(skip):]
     base_key = stripped_key if recursive else stripped_key.split('/')[-1]
-    return f'{new_prefix}{base_key}'
+    return f'{prefix}{base_key}'
 
 
 class InvalidPrefix(Exception):
