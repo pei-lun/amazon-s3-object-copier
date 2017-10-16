@@ -13,4 +13,4 @@ An AWS Lambda function copying S3 object to another S3 bucket when receiving obj
 
 ## Usage
 
-After `s3://source/x/y/object` created, it will be copied to `s3://destination/z/object` with `BUCKET` set to `destination` and `PREFIX` set to `z/`. If `RECURSIVE` set to `1`, the object will be copied to `s3://destination/x/y/z/object`. You can set `SKIP` to `x/` and the object will be copied to `s3://destination/y/z/object`.
+After `s3://source/bar/baz/object` created, it will be copied to `s3://destination/foo/object` with `BUCKET` set to `destination` and `PREFIX` set to `foo/`. If `RECURSIVE` is set to `1`, the object will be copied to `s3://destination/foo/bar/baz/object`. You can set `SKIP` to `bar/` and the object will be copied to `s3://destination/foo/baz/object`.
