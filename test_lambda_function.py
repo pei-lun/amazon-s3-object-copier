@@ -29,7 +29,7 @@ def test_generate_new_key():
 
 
 @mock_s3
-def test_lambda_handler():
+def test_lambda_handler(monkeypatch):
     source_bucket = 'source'
     source_key = 'bar/baz/object'
     object_content = b'Hello World'
@@ -61,6 +61,10 @@ def test_lambda_handler():
             }
         ]
     }
+    monkeypatch.setenv('BUCKET', destination_bucket)
+    monkeypatch.setenv('PREFIX', 'foo/')
+    monkeypatch.setenv('RECURSIVE', '1')
+    monkeypatch.setenv('SKIP', 'bar/')
     s3_resource = boto3.resource('s3', region_name='us-east-1')
     s3_resource.create_bucket(Bucket=source_bucket)
     s3_resource.create_bucket(Bucket=destination_bucket)

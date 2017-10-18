@@ -17,4 +17,4 @@ After `s3://source/bar/baz/object` created, it will be copied to `s3://destinati
 
 ## Test
 
-Run `pip install boto3 moto pytest pytest-env` and then run `pytest`.
+Run `pip install -r requirements-test.txt` and then run `pytest`.
