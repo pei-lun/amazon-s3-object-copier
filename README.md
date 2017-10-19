@@ -6,10 +6,10 @@ An AWS Lambda function copying S3 object to another S3 bucket when receiving obj
 
 ## Environment Variables
 
-- `BUCKET`: required.
-- `PREFIX`: required.
-- `RECURSIVE`: optional.
-- `SKIP`: optional.
+- `BUCKET`: (required) Destination bucket
+- `PREFIX`: (optional) Prefix prepended to object key
+- `RECURSIVE`: (optional)
+- `SKIP`: (optional)
 
 ## Usage
 
