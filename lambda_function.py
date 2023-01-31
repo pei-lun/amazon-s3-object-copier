@@ -11,18 +11,13 @@ def lambda_handler(event, *_):
     recursive = environ.get('RECURSIVE', '0')
     skip = environ.get('SKIP', '')
 
-    record: dict = event['Records'][0]
-    if record.get('EventSource') == 'aws:sns':
-        s3_event = json.loads(record['Sns']['Message'])
-        if s3_event.get('Event') == 's3:TestEvent':
-            return
-        source_bucket = s3_event['Records'][0]['s3']['bucket']['name']
-        source_key = unquote_plus(s3_event['Records'][0]['s3']['object']['key'])
-    elif record.get('eventSource') == 'aws:s3':
-        source_bucket = record['s3']['bucket']['name']
-        source_key = unquote_plus(record['s3']['object']['key'])
-    else:
-        print(f'Unrecognized event: "{event}".')
+    try:
+        source_bucket, source_key = process_event(event)
+    except TestEvent:
+        print('Skip test event.')
+        return
+    except UnrecognizedEvent:
+        print(f'Unrecognized event: {event}')
         return
 
     s3_client = boto3.client('s3')
@@ -56,3 +51,28 @@ def generate_new_key(key, prefix='', recursive=False, skip=''):
 class InvalidPrefix(Exception):
     def __str__(self):
         return 'Invalid prefix!'
+
+
+def process_event(event: dict):
+    record: dict = event['Records'][0]
+    if record.get('EventSource') == 'aws:sns':
+        s3_event = json.loads(record['Sns']['Message'])
+        if s3_event.get('Event') == 's3:TestEvent':
+            raise TestEvent()
+        s3_record = s3_event['Records'][0]
+    elif record.get('eventSource') == 'aws:s3':
+        s3_record = record
+    else:
+        raise UnrecognizedEvent()
+
+    bucket_name = s3_record['s3']['bucket']['name']
+    object_key = unquote_plus(s3_record['s3']['object']['key'])
+    return bucket_name, object_key
+
+
+class TestEvent(Exception):
+    pass
+
+
+class UnrecognizedEvent(Exception):
+    pass
